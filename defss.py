@@ -11,4 +11,5 @@ def acss():
 def rmv():
         x = int(input('num for remove in DB: '))
         rmv = (DB.DB[x])
+        del rmv
         print('removed')
