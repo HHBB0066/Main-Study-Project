@@ -6,7 +6,7 @@ import DB
 
 while True:
 	p = '9828'
-	t = input('what u wanna do?\n\nadd something on DB <add>, acess something in DB <acss>, clear the terminal <cls>, or get out of the progam? <q>\n: ').lower()
+	t = input('what u wanna do?\n\nadd something on DB <add>, acess something in DB <acss>, clear the terminal <cls>, or get out of the program? <q>\n: ').lower()
 	if t == 'add':
 		pin = input('PIN: ')
 		if pin != p:
