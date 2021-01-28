@@ -6,7 +6,7 @@ import DB
 
 while True:
 	p = '9828'
-	t = input('what u wanna do?\n\nadd something on DB <add>, acess something in DB <acss>, clear the terminal <cls>, or get out of the program? <q>\n: ').lower()
+	t = input('what u wanna do?\n\nadd something on DB <add>, acess something in DB <acss>, <rmv> to remove, clear the terminal <cls>, or get out of the program? <q>\n: ').lower()
 	if t == 'add':
 		pin = input('PIN: ')
 		if pin != p:
@@ -27,6 +27,8 @@ while True:
 					defss.acss()
 		elif pin == p:
 			defss.acss()
+        elif t == 'rmv':
+                defss.rmv()
 	elif t == 'cls':
 		os.system('clear')
 	elif t == 'q':
