@@ -8,3 +8,7 @@ def add(x):
 def acss():
 	x = int(input('num for DB: '))
 	print(DB.DB[x])
+def rmv():
+        x = int(input('num for remove in DB: '))
+        rmv = (DB.DB[x])
+        print('removed')
