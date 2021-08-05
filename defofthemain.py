@@ -24,13 +24,15 @@ def register(regbutton, loggbutton, rootwindow):
         c.execute("SELECT USER FROM LOGGINDATA")
         userentryvalue = str(usersv.get())
         userentryvalue = str(userentryvalue)
+        passwordentryvalue = str(passwordsv.get())
+        passwordentryvalue = str(passwordentryvalue)
         for query_result in c.fetchall():
             if userentryvalue in query_result:
                 messagebox.showerror(title="Error", message="User already exists") 
             else:
-                pass
-            
+                c.execute("SELECT * FROM LOGGINDATA")
+                print(c.fetchall())
+                c.execute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)", (userentryvalue, passwordentryvalue))
     confirmregistbutton = Button(lbframe, text='Click Here to Register',font=("Arial", 60, BOLD),relief=GROOVE, padx=220, pady=50, command=lambda: register_attempt()).pack()
     lbframe.pack(padx=200)
-    
     
