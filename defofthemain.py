@@ -19,7 +19,6 @@ def register(regbutton, loggbutton, rootwindow):
     passwordentry= Entry(lbframe,textvariable=passwordsv, font=("Arial", 60, "bold"))
     userentry.pack(padx=200)
     passwordentry.pack(padx=200)
-    testlist = 'THIS IS SOMETHING AGAIN'
     def register_attempt():
         c.execute("SELECT USER FROM LOGGINDATA")
         userentryvalue = str(usersv.get())
