@@ -10,7 +10,7 @@ logginwindow.resizable(height=False, width=False)
 
 registerbutton = Button(logginwindow, text=('register'), font=('Arial', 40, 'bold'), padx=600, pady=150, bg='white', justify= "center", command=lambda: register(registerbutton, logginbutton, logginwindow))
 
-logginbutton = Button(logginwindow, text="loggin", font=("Arial", 40, "bold"), padx=620, pady=150, bg='white')
+logginbutton = Button(logginwindow, text="loggin", font=("Arial", 40, "bold"), padx=620, pady=150, bg='white', command=lambda: loggin(registerbutton, logginbutton, logginwindow))
 registerbutton.grid()
 logginbutton.grid()
 logginwindow.update()
