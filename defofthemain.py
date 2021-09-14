@@ -7,6 +7,12 @@ from tkinter import messagebox
 import time
 import itertools
 
+def selectUser():
+    c.execute("SELECT USER FROM LOGGINDATA")
+
+def selectPassword():
+    c.execute("SELECT PASSWORD FROM LOGGINDATA")
+
 def runLoginWindow():
     logginwindow = Tk()
     logginwindow.state('zoomed')
@@ -60,26 +66,51 @@ def all_children(window):
     return _list
 
 
+
+
 def cleanWindow(MainWindow):
     widget_list = all_children(MainWindow)
     for item in widget_list:
         item.destroy()
 
-def registernow(mainwindow,usrentv, pwdentv):
-    c.execute("SELECT * FROM LOGGINDATA")
-    print("Something just for a simple test")
-    c.execute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)",
-              (usrentv, pwdentv))
-    messagebox.showinfo(title="Successful",
-                        message="Successfully Registered")
-    cleanWindow(mainwindow)
-    mainwindow.update()
+def registernow(mainwindow,usrentv,pwdentv):
+    if (not usrentv or pwdentv == "") or (not usrentv.isspace() or pwdentv.isspace()):
 
+
+        c.execute("SELECT * FROM LOGGINDATA")
+        print("Something just for a simple test")
+        c.execute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)",
+                  (usrentv, pwdentv))
+        messagebox.showinfo(title="Successful",
+                            message="Successfully Registered")
+        cleanWindow(mainwindow)
+        mainwindow.update()
+    else:
+        messagebox.showerror(title="Value is Empty", message="Please insert something on both entry fields")
+        raise ValueIsEmptyError
 
 def flatit(listtoflat):
     flatten = itertools.chain.from_iterable
     listtoflat = list(flatten(listtoflat))
     return listtoflat
+
+
+def usersList():
+    selectUser()
+    userinlist = []
+    for queryresult in c.fetchall():
+        userinlist.append(queryresult)
+    userinlist = flatit(userinlist)
+    return userinlist
+
+
+def passwordList():
+    selectPassword()
+    passwordinlist = []
+    for queryresult in c.fetchall():
+        passwordinlist.append(queryresult)
+    passwordinlist = flatit(passwordinlist)
+    return passwordinlist
 
 
 def MyClick(rootwindow, whatever):
@@ -100,22 +131,19 @@ def register(regbutton, loggbutton, rootwindow):
     passwordentry.grid()
 
     def register_attempt():
-        c.execute("SELECT USER FROM LOGGINDATA")
+        selectUser()
         userentryvalue = str(usersv.get())
         userentryvalue = str(userentryvalue)
         passwordentryvalue = str(passwordsv.get())
         passwordentryvalue = str(passwordentryvalue)
-        inlist = []
-        for queryresult in c.fetchall():
-            inlist.append(queryresult)
-        inlist = flatit(inlist)
-        print(inlist)
+        userinlist = usersList()
+        passwordinlist = passwordList()
         x = userentryvalue
         y = passwordentryvalue
-        if userentryvalue in inlist:
+        if (userentryvalue in userinlist): #and (passwordentryvalue in passwordinlist)
             messagebox.showerror(
                 title="Error", message="The typed user already exist")
-        elif userentryvalue not in inlist:
+        elif (userentryvalue not in userinlist) or (passwordentryvalue not in passwordinlist):
             while True:
             #     time.sleep(5)
                 # errorobject = valueIsEmpty(message="We got a error", entry=x, entry2=y)
@@ -125,7 +153,7 @@ def register(regbutton, loggbutton, rootwindow):
                         raise ValueIsEmptyError
                     # c.execute("SELECT * FROM LOGGINDATA")
                     # print("Something just for a simple test")
-                    # c.execute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)",
+                    # c.exe-cute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)",
                     #           (userentryvalue, passwordentryvalue))
                     # messagebox.showinfo(title="Successful",
                     #                     message="Successfully Registered")
@@ -159,15 +187,19 @@ def loggin(regbutton, loggbutton, rootwindow):
     passwordentry.grid()
 
     def loggin_attempt():
-        c.execute("SELECT USER FROM LOGGINDATA")
+        selectUser()
         userentryvalue = str(usersv.get())
         userentryvalue = str(userentryvalue)
         passwordentryvalue = str(passwordsv.get())
         passwordentryvalue = str(passwordentryvalue)
-        inlist = []
+        userinlist = []
+        passwordinlist = []
         for queryresult in c.fetchall():
-            inlist.append(queryresult)
-        inlist = flatit(inlist)
+            userinlist.append(queryresult)
+        inlist = flatit(userinlist)
+        for queryresult in c.fetchall():
+            passwordinlist.append(queryresult)
+        passwordinlist = flatit(inlist)
         if userentryvalue in inlist:
             cleanWindow(rootwindow)
         elif userentryvalue not in inlist:
