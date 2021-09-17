@@ -182,16 +182,17 @@ def loggin(rootwindow):
         passwordinlist = passwordList()
         x = userentryvalue
         y = passwordentryvalue
-
+        tries = 0
         if (userentryvalue in userinlist) and (passwordentryvalue in passwordinlist):
             cleanWindow(logginframe)
         elif (userentryvalue not in userinlist) or (passwordentryvalue not in passwordinlist):
-            if entryValueChecker(x, y) == True :
+            if x == "" or y == "":# if entryValueChecker(x, y) == True :
                 messagebox.showerror(title="Empty Field", message="Please fill both of the fields")
-            elif (" " in x) or (" " in y):
+            elif " " in x or " " in y:
                 messagebox.showerror(title="Space error", message="Remove the spaces on the fields")
             elif (x in userinlist) and (y not in passwordinlist):
                 messagebox.showwarning(title='Password Error', message="Wrong Password")
+                
             else:
                 messagebox.showerror(
                 title="Error", message="The typed user doesn't exist")
