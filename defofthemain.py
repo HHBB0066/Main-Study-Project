@@ -2,10 +2,13 @@ from sqlite3.dbapi2 import Error
 from tkinter import *
 from tkinter import font
 from tkinter.font import BOLD, Font
+from typing import Counter
 from sqlofthemain import *
 from tkinter import messagebox
 import time
 import itertools
+
+
 
 def selectUser():
     c.execute("SELECT USER FROM LOGGINDATA")
@@ -13,39 +16,38 @@ def selectUser():
 def selectPassword():
     c.execute("SELECT PASSWORD FROM LOGGINDATA")
 
-def runLoginWindow():
-    logginwindow = Tk()
-    logginwindow.state('zoomed')
-    logginwindow.title('Loggin')
-    logginwindow.iconbitmap
-    logginwindow.resizable(height=False, width=False)
-
-
-    registerbutton = Button(logginwindow, text=('register'), font=('Arial', 40, 'bold'), padx=600, pady=150,
-                            bg='white', justify="center", command=lambda: register(registerbutton, logginbutton, logginwindow))
-
-    logginbutton = Button(logginwindow, text="loggin", font=("Arial", 40, "bold"), padx=620,
-                          pady=150, bg='white', command=lambda: loggin(registerbutton, logginbutton, logginwindow))
-    registerbutton.grid()
-    logginbutton.grid()
-    logginwindow.update()
-    windowname = 'Menu'
-    logginwindow.mainloop()
+def runMainWindow():
+    mainwindow = Tk()
+    mainwindow.state('zoomed')
+    # mainwindow.attributes('-fullscreen', True)
+    mainwindow.title('Loggin')
+    mainwindow.iconbitmap
+    mainwindow.resizable(height=False, width=False)
+    mainwindowframe = LabelFrame(mainwindow, relief=FLAT)
+    registerbutton = Button(mainwindowframe, text=('register'), font=('Arial', 40, 'bold'), padx=600, pady=150,
+                            bg='white', justify="center", command=lambda: register(rootwindow=mainwindow,frame=mainwindowframe)).grid()    
+    
+    logginbutton = Button(mainwindowframe, text="loggin", font=("Arial", 40, "bold"), padx=620,
+                          pady=150, bg='white', command=lambda: loggin(mainwindow)).grid()
+    
+    mainwindowframe.grid()
+    mainwindow.update()
+    mainwindow.mainloop()
 
     
 class ValueIsEmptyError(Error):
     """Raised when there is nothing in the entry input field"""
     pass
 
-# def entryValueChecker(entry, entry2):
-#     """
-#         It's gonna return True if there is nothing, or it's gonna return False if there is anithyng.
+def entryValueChecker(entry, entry2):
+    """
+        It's gonna return True if there is nothing, or it's gonna return False if there is anything.
 
-#     """
-#     if (entry.isspace() == True or entry == "") or (entry2.isspace() == True or entry2 == ""):
-#         return True
-#     else:
-#         return False
+    """
+    if (entry.isspace() == True or entry == "") or (entry2.isspace() == True or entry2 == ""):
+        return True
+    else:
+        return False
 
 # class valueIsEmpty(Exception):
 #     def __init__(self, message, entry, entry2):
@@ -65,7 +67,12 @@ def all_children(window):
 
     return _list
 
-
+def goBack(mainframe, frametogoback):
+    def goBackNow(fmtgb):
+        mainframe.grid_remove()
+        fmtgb.grid()
+    gobackbutton = Button(mainframe, text='Go Back', font=("Arial", 60, BOLD), relief=GROOVE, padx=220, pady=50, command=lambda: goBackNow(frametogoback)).grid()
+    
 
 
 def cleanWindow(MainWindow):
@@ -74,20 +81,13 @@ def cleanWindow(MainWindow):
         item.destroy()
 
 def registernow(mainwindow,usrentv,pwdentv):
-    if (not usrentv or pwdentv == "") or (not usrentv.isspace() or pwdentv.isspace()):
-
-
-        c.execute("SELECT * FROM LOGGINDATA")
-        print("Something just for a simple test")
-        c.execute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)",
-                  (usrentv, pwdentv))
-        messagebox.showinfo(title="Successful",
-                            message="Successfully Registered")
-        cleanWindow(mainwindow)
-        mainwindow.update()
-    else:
-        messagebox.showerror(title="Value is Empty", message="Please insert something on both entry fields")
-        raise ValueIsEmptyError
+    c.execute("SELECT * FROM LOGGINDATA")
+    c.execute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)", (usrentv, pwdentv))
+    print(usrentv, pwdentv)
+    messagebox.showinfo(title="Successful",
+                        message="Successfully Registered")
+    cleanWindow(mainwindow)
+    mainwindow.update()
 
 def flatit(listtoflat):
     flatten = itertools.chain.from_iterable
@@ -113,19 +113,20 @@ def passwordList():
     return passwordinlist
 
 
+
+
 def MyClick(rootwindow, whatever):
     MyLabel = Label(rootwindow, text=(f"Hello {whatever.get()}"))
     MyLabel.grid()
 
 
-def register(regbutton, loggbutton, rootwindow):
-    regbutton.destroy()
-    loggbutton.destroy()
+def register(rootwindow, frame):
+    frame.destroy()
     usersv = StringVar()
     passwordsv = StringVar()
-    lbframe = LabelFrame(rootwindow, relief=FLAT)
-    userentry = Entry(lbframe, textvariable=usersv, font=("Arial", 60, "bold"))
-    passwordentry = Entry(lbframe, textvariable=passwordsv,
+    registerframe = LabelFrame(rootwindow, relief=FLAT)
+    userentry = Entry(registerframe, textvariable=usersv, font=("Arial", 60, "bold"))
+    passwordentry = Entry(registerframe, textvariable=passwordsv,
                           font=("Arial", 60, "bold"))
     userentry.grid()
     passwordentry.grid()
@@ -133,9 +134,10 @@ def register(regbutton, loggbutton, rootwindow):
     def register_attempt():
         selectUser()
         userentryvalue = str(usersv.get())
-        userentryvalue = str(userentryvalue)
+        # userentryvalue = str(userentryvalue)
         passwordentryvalue = str(passwordsv.get())
-        passwordentryvalue = str(passwordentryvalue)
+        # passwordentryvalue = str(passwordentryvalue)
+        print(userentryvalue, passwordentryvalue)
         userinlist = usersList()
         passwordinlist = passwordList()
         x = userentryvalue
@@ -144,44 +146,28 @@ def register(regbutton, loggbutton, rootwindow):
             messagebox.showerror(
                 title="Error", message="The typed user already exist")
         elif (userentryvalue not in userinlist) or (passwordentryvalue not in passwordinlist):
-            while True:
-            #     time.sleep(5)
-                # errorobject = valueIsEmpty(message="We got a error", entry=x, entry2=y)
-                try:
-                    rootwindow.update()
-                    if (x or y == "") or (x.isspace() or y.isspace() == True):
-                        raise ValueIsEmptyError
-                    # c.execute("SELECT * FROM LOGGINDATA")
-                    # print("Something just for a simple test")
-                    # c.exe-cute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)",
-                    #           (userentryvalue, passwordentryvalue))
-                    # messagebox.showinfo(title="Successful",
-                    #                     message="Successfully Registered")
-                    # cleanWindow(rootwindow)
-                    # rootwindow.update()
-                except ValueIsEmptyError:
-                    print("Please, fill in the fields")
-                    # rootwindow.update()
-                    print("Error: It should be something in the entry")
-                    messagebox.showerror(title="Error", message="It should be something on the entry field")
-                    break
-                print('deu certo')
-                registernow(mainwindow=rootwindow, usrentv=x, pwdentv=y)
+            if entryValueChecker(x, y) == True :
+                messagebox.showerror(title="Empty Field", message="Please fill both of the fields")
+            elif (" " in x) or (" " in y):
+                messagebox.showerror(title="Space error", message="Remove the spaces on the fields")
+            else:
+                registernow(rootwindow, x, y)
                 
         # register_attempt()
     windowname = 'Register_Window'
-    confirmbutton = Button(lbframe, text='Click Here to Register', font=("Arial", 60, BOLD), relief=GROOVE, padx=220, pady=50, command=lambda: register_attempt()).grid()
-    lbframe.grid()
+    confirmbutton = Button(registerframe, text='Click Here to Register', font=("Arial", 60, BOLD), relief=GROOVE, padx=220, pady=50, command=lambda: register_attempt()).grid()
+    goBack(registerframe, frame)
+    registerframe.grid()
+    print()
 
 
-def loggin(regbutton, loggbutton, rootwindow):
-    regbutton.destroy()
-    loggbutton.destroy()
+def loggin(rootwindow):
+    cleanWindow(rootwindow)
     usersv = StringVar()
     passwordsv = StringVar()
-    lbframe = LabelFrame(rootwindow, relief=FLAT)
-    userentry = Entry(lbframe, textvariable=usersv, font=("Arial", 60, "bold"))
-    passwordentry = Entry(lbframe, textvariable=passwordsv,
+    logginframe = LabelFrame(rootwindow, relief=FLAT)
+    userentry = Entry(logginframe, textvariable=usersv, font=("Arial", 60, "bold"))
+    passwordentry = Entry(logginframe, textvariable=passwordsv,
                           font=("Arial", 60, "bold"))
     userentry.grid()
     passwordentry.grid()
@@ -189,27 +175,31 @@ def loggin(regbutton, loggbutton, rootwindow):
     def loggin_attempt():
         selectUser()
         userentryvalue = str(usersv.get())
-        userentryvalue = str(userentryvalue)
+        # userentryvalue = str(userentryvalue)
         passwordentryvalue = str(passwordsv.get())
-        passwordentryvalue = str(passwordentryvalue)
-        userinlist = []
-        passwordinlist = []
-        for queryresult in c.fetchall():
-            userinlist.append(queryresult)
-        inlist = flatit(userinlist)
-        for queryresult in c.fetchall():
-            passwordinlist.append(queryresult)
-        passwordinlist = flatit(inlist)
-        if userentryvalue in inlist:
-            cleanWindow(rootwindow)
-        elif userentryvalue not in inlist:
-            messagebox.showerror(
+        # passwordentryvalue = str(passwordentryvalue)
+        userinlist = usersList()
+        passwordinlist = passwordList()
+        x = userentryvalue
+        y = passwordentryvalue
+
+        if (userentryvalue in userinlist) and (passwordentryvalue in passwordinlist):
+            cleanWindow(logginframe)
+        elif (userentryvalue not in userinlist) or (passwordentryvalue not in passwordinlist):
+            if entryValueChecker(x, y) == True :
+                messagebox.showerror(title="Empty Field", message="Please fill both of the fields")
+            elif (" " in x) or (" " in y):
+                messagebox.showerror(title="Space error", message="Remove the spaces on the fields")
+            elif (x in userinlist) and (y not in passwordinlist):
+                messagebox.showwarning(title='Password Error', message="Wrong Password")
+            else:
+                messagebox.showerror(
                 title="Error", message="The typed user doesn't exist")
     windowname = 'Loggin_Window'
-    confirmbutton = Button(lbframe, text='Click Here to Loggin', font=(
+    confirmbutton = Button(logginframe, text='Click Here to Loggin', font=(
         "Arial", 60, BOLD), relief=GROOVE, padx=220, pady=50, command=lambda: loggin_attempt()).grid()
-    lbframe.grid()
-
+    # goBack(logginframe)
+    logginframe.grid()
     # for query_result in c.fetchall():
     #         if userentryvalue not in query_result:
     #             # messagebox.showerror(title="Error", message="User doesn't exist, please come back and register")
@@ -230,3 +220,27 @@ def loggin(regbutton, loggbutton, rootwindow):
 #                         item.destroy()
 #             elif userentryvalue not in query_result:
 #                 messagebox.showerror(title="Error", message="User doesn't exist, please come back and register")
+
+
+   #     time.sleep(5)
+                # errorobject = valueIsEmpty(message="We got a error", entry=x, entry2=y)
+                # try:
+                #     rootwindow.update()
+                #     if (x or y == "") or (x.isspace() or y.isspace() == True):
+                #         raise ValueIsEmptyError
+                #     # c.execute("SELECT * FROM LOGGINDATA")
+                #     # print("Something just for a simple test")
+                #     # c.exe-cute("INSERT INTO LOGGINDATA (USER, PASSWORD) VALUES (?, ?)",
+                #     #           (userentryvalue, passwordentryvalue))
+                #     # messagebox.showinfo(title="Successful",
+                #     #                     message="Successfully Registered")
+                #     # cleanWindow(rootwindow)
+                #     # rootwindow.update()
+                # except ValueIsEmptyError:
+                #     print("Please, fill in the fields")
+                #     # rootwindow.update()
+                #     print("Error: It should be something in the entry")
+                #     messagebox.showerror(title="Error", message="It should be something on the entry field")
+                #     break
+                # print('deu certo')
+                # registernow(mainwindow=rootwindow, usrentv=x, pwdentv=y)
